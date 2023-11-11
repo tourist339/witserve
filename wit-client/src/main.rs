@@ -9,47 +9,47 @@ use wasmtime::{
 };
 mod req;
 
-wasmtime::component::bindgen!(
-    {
-        world:"host",
-        path: "../wit-server/wit/host.wit",
-    }
-);
+// wasmtime::component::bindgen!(
+//     {
+//         world:"host",
+//         path: "../wit-server/wit/host.wit",
+//     }
+// );
 
 static DEFAULT_PORT: &str = "8080";
 
 struct Fib;
-impl Host_Imports for Fib {
-    fn run(&mut self, n:u32)->wasmtime::Result<u32>{
-        Ok(n*n)
-    }
-}
+// impl Host_Imports for Fib {
+//     fn run(&mut self, n:u32)->wasmtime::Result<u32>{
+//         Ok(n*n)
+//     }
+// }
 #[tokio::main]
 async fn main() -> anyhow::Result<()> {
     // Initialize the default tracing subscriber.
     tracing_subscriber::fmt::init();
 
-    let mut config = Config::new();
-    config.wasm_component_model(true);
-
-    let engine = Engine::new(&config)?;
-    let mut store = Store::new(
-        &engine, Fib{}
-    );
-
-
-    let mut linker = Linker::new(&engine);
-    Host_::add_to_linker(&mut linker, |state: &mut Fib| state);
-
-    let component = Component::from_file(&engine, "../wit-server/my-component.wasm")?;
-
-    let (host,_) = Host_::instantiate(&mut store, &component, &linker)?;
-
-    let k = host.call_execute(&mut store,10).expect("no shit");
-
-    let y =host.bar().call_getheader(&mut store).expect("ohmh");
-    print!("WASMTIME RESPONDING {} {} ", k, y);
-
+    // let mut config = Config::new();
+    // config.wasm_component_model(true);
+    //
+    // let engine = Engine::new(&config)?;
+    // let mut store = Store::new(
+    //     &engine, Fib{}
+    // );
+    //
+    //
+    // let mut linker = Linker::new(&engine);
+    // Host_::add_to_linker(&mut linker, |state: &mut Fib| state);
+    //
+    // let component = Component::from_file(&engine, "../wit-server/my-component.wasm")?;
+    //
+    // let (host,_) = Host_::instantiate(&mut store, &component, &linker)?;
+    //
+    // let k = host.call_execute(&mut store,10).expect("no shit");
+    //
+    // let y =host.bar().call_getheader(&mut store).expect("ohmh");
+    // print!("WASMTIME RESPONDING {} {} ", k, y);
+    //
 
     let port: u16 = std::env::args()
         .nth(1)
@@ -67,13 +67,20 @@ async fn main() -> anyhow::Result<()> {
         // do not block the main thread, spawn a new task
         tokio::spawn(async move {
             info!(?addr, "new connection");
-
-            match req::parse_request(&mut stream).await {
-                Ok(()) => {},
-                Err(e) => {
-                    info!(?e, "failed to parse request");
-                }
+            loop {
+                let req = match req::parse_request(&mut stream).await {
+                    Ok(()) => {
+                        println!("done");
+                        break;
+                    }
+                    Err(_) => {
+                        println!( "failed to parse request");
+                        break;
+                    }
+                };
             }
+
+
         });
     }
 }
