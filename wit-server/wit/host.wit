@@ -1,5 +1,23 @@
 package example:host
 
+interface http-api{
+    record req{
+        headers:string,
+        footer:string
+    }
+    getheader: func() -> u32
+}
+
 world host{
-    export run: func(k: u32)->u32
+    export bar : interface{
+        record req{
+            headers:string,
+        }
+        getheader: func() -> u32
+    }
+
+    import run: func(n : u32)->u32
+
+
+    export execute: func(n : u32)->u32
 }

@@ -6,7 +6,7 @@ edition = "2021"
 # See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
 
 [dependencies]
-wasmtime ={features= ['component-model']}
+wasmtime ={features= ['component-model'], version = "12.0.2"}
 tokio = { version = "1", features = ["full"] }
 mini-redis = "0.4"
 anyhow = "1.0.75"
