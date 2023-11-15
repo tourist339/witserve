@@ -3,6 +3,7 @@ pub struct Request {
     pub method: Method,
     pub path: String,
     pub headers: HashMap<String, String>,
+    pub data: String
 }
 
 #[derive(Debug, Copy, Clone, Eq, PartialEq, Hash)]
@@ -18,6 +19,8 @@ use serde::de::Unexpected::Str;
 
 use tokio::io::{AsyncBufRead, AsyncBufReadExt, AsyncReadExt, AsyncWriteExt};
 use serde_json::{Result, Value};
+use crate::{Host_, WASM};
+use crate::resp::send_resp;
 // [...]
 
 impl TryFrom<&str> for Method {
@@ -32,7 +35,7 @@ impl TryFrom<&str> for Method {
     }
 }
 
-pub async fn parse_request(stream: &mut (impl AsyncBufReadExt + Unpin + AsyncWriteExt)) -> anyhow::Result<()> {
+pub async fn parse_request(stream: &mut (impl AsyncBufReadExt + Unpin + AsyncWriteExt), host: &mut WASM) -> anyhow::Result<Request> {
     let mut line_buffer = String::new();
     //let mut buff = [0;100000];
     //stream.read(&mut buff);
@@ -86,36 +89,13 @@ pub async fn parse_request(stream: &mut (impl AsyncBufReadExt + Unpin + AsyncWri
     let p =  json::parse(
         c.as_str()
     ).unwrap();
-    println!("a {}",p["fs"]);
-    let pj = String::from(  r#"
-        {
-        "resp" : "abc"
-        }
-        "#);
+    let n  = p["n"].as_i32().unwrap();
+    send_resp(stream,n,host).await?;
 
-    let data = pj.into_bytes();
-    let headers1 = hashmap! {
-            "Content-Length".to_string() => data.len().to_string(),
-            "Content-Type".to_string() => String::from("application/json"),
-        };
-    let mut res = Box::new(Cursor::new(data));
-
-    let headers =
-        headers1
-        .iter()
-        .map(|(k, v)| format!("{}: {}", k, v))
-        .collect::<Vec<_>>()
-        .join("\r\n");
-
-    let resp =    format!("HTTP/1.1 {}\r\n{headers}\r\n\r\n", 201);
-
-
-    stream.write_all(&String::from(resp).into_bytes()).await?;
-
-    tokio::io::copy(&mut res, stream).await?;
-
-
-
-
-    Ok(())
+    Ok(Request{
+        method:method,
+        path:path,
+        headers:headers,
+        data:c
+    })
 }
