@@ -1,0 +1,1 @@
+loadtest http://localhost:8080/ -m POST -T application/json -p test_small.json -n 1 -c 2
