@@ -77,15 +77,16 @@ pub async fn parse_request(stream: &mut (impl AsyncBufReadExt + Unpin + AsyncWri
             headers.insert(key.to_string(), value.to_string());
     }
 
-    let body_len = headers.get("Content-Length");
+    let body_len = headers.get("Content-Length").unwrap_or_else(|| headers.get("content-length").unwrap());
     let mut content;
     let mut c= String::from("");
-    if let Some(l) = body_len{
-        content = vec![0;l.parse::<usize>().unwrap()];
-        stream.read_exact(&mut content).await;
-        c = String::from_utf8(content).unwrap();
-        println!("Content Length {:?}",c);
-    }
+    
+    content = vec![0;body_len.parse::<usize>().unwrap()];
+    stream.read_exact(&mut content).await;
+    c = String::from_utf8(content).unwrap();
+    c = c.trim_matches(char::from(0)).to_string();
+    println!("Content Length {:?}",c);
+    
     let p =  json::parse(
         c.as_str()
     ).unwrap();
