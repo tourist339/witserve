@@ -24,19 +24,25 @@ pub struct WASM{
     pub s : Store<Fib>,
     pub host : Host_
 }
+
+pub fn run_fib(j:u32)->u32{
+    fn x(j:u32)->u32{
+        if j <=0{
+           return 0;
+        }
+        else if j == 1{
+            return 1;
+        }
+        return x(j-1)+x(j-2);
+    }
+    x(j)
+}
+
 pub struct Fib;
 impl Host_Imports for Fib {
     fn run(&mut self, n:u32)->wasmtime::Result<u32>{
-        fn x(j:u32)->u32{
-            if j <=0{
-               return 0;
-            }
-            else if j == 1{
-                return 1;
-            }
-            return x(j-1)+x(j-2);
-        }
-        Ok(x(n))
+        
+        Ok(run_fib(n))
     }
 }
 #[tokio::main]
