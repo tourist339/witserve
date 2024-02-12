@@ -1,0 +1,8 @@
+
+package user:fib
+
+
+world host{
+    import request:proxy/preproxy
+    export fib: func(n : u32)->u32
+}

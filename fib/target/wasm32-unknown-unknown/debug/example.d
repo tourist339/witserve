@@ -1,0 +1,1 @@
+/Users/kartikkapoor/Documents/rustprojects/witserve/fib/target/wasm32-unknown-unknown/debug/example.wasm: /Users/kartikkapoor/Documents/rustprojects/witserve/fib/src/bindings.rs /Users/kartikkapoor/Documents/rustprojects/witserve/fib/src/lib.rs

@@ -1,0 +1,9 @@
+package component:proxy
+
+/// An example world for the component to target.
+interface proxy{
+  middleware:func(k:u32)->u32
+}
+world example {
+  export proxy
+}

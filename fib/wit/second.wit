@@ -1,0 +1,9 @@
+package user:fib;
+interface run{
+  run: func(k: u32)-> u32;
+}
+
+world fib{
+   export run;
+   import component:proxy/proxy;
+}
