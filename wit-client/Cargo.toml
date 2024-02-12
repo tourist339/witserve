@@ -5,8 +5,11 @@ edition = "2021"
 
 # See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
 
+#prev wasmtime 12.0.2
 [dependencies]
 wasmtime ={features= ['component-model'], version = "12.0.2"}
+wasmtime-wasi = { git = "https://github.com/bytecodealliance/wasmtime", rev = "2ade3ad" }
+
 tokio = { version = "1", features = ["full"] }
 warp = "0.3"
 mini-redis = "0.4"
@@ -18,3 +21,6 @@ json = "0.12.4"
 serde_json = { version = "1.0.108", features = [] }
 serde = { version = "1.0.192", features = ["derive"] }
 serde_derive = "1.0.192"
+
+[package.metadata.component]
+package = "example:fib"
