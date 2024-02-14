@@ -8,6 +8,9 @@ interface http-api{
     getheader: func() -> u32
 }
 
+interface runit{
+    run: func(n : u32)->u32
+}
 world host{
     export bar : interface{
         record req{
@@ -16,8 +19,14 @@ world host{
         getheader: func() -> u32
     }
 
-    import run: func(n : u32)->u32
-
-
+    import  run: func(n : u32)->u32
+    
     export execute: func(n : u32)->u32
+
+    export pre: func(n : u32)->u32
 }
+
+world second{
+    export count: func() -> u32
+}
+

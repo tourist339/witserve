@@ -1,0 +1,10 @@
+package user:fib
+
+interface run{
+    run: func(k: u32)-> u32
+}
+
+/// An example world for the component to target.
+world example {
+  export run
+}

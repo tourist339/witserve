@@ -1,0 +1,7 @@
+package request:proxy
+interface preproxy{
+   pre: func(n : u32)->u32
+   }
+world proxy{
+   export preproxy
+   }
