@@ -8,17 +8,23 @@ use tracing::info;
 use serde_derive::{Deserialize, Serialize};
 
 use warp::Filter;
-use wasmtime::{self, component::{Component, Linker}, Config, Engine, Store};
+use wasmtime::{self, component::{Component, Linker}, Config, Engine, Instance, Store, Module};
 use wasmtime::component::__internal::wasmtime_environ::object::U32;
 use wasmtime::component::{ComponentNamedList, Val};
+
+// wasmtime::component::bindgen!(
+//     {
+//         world:"example",
+//         path: "../c-lib/host.wit",
+//     }
+// );
 
 wasmtime::component::bindgen!(
     {
         world:"example",
-        path: "world.wit",
+        path: "./world.wit",
     }
 );
-
 
 // wasmtime::component::bindgen!(
 //     {
@@ -68,11 +74,14 @@ async fn reply() -> Result<Box<dyn warp::Reply>, warp::Rejection> {
 
         let mut linker = Linker::new(&engine);
 
-        let component = Component::from_file(&engine, "../wit-server/my-component.wasm").unwrap();
+        // let component = Component::from_file(&engine, "../wit-server/my-component.wasm").unwrap();
         let composed = Component::from_file(&engine, "../composed/composed.wasm").unwrap();
+    // let c_component = Module::from_file(&engine, "../c-lib/my-core.wasm").unwrap();
 
-        let cargocomp = Component::from_file(&engine, "../proxy/target/wasm32-unknown-unknown/release/proxy.wasm").unwrap();
-        let (example,_) = Example::instantiate(&mut store, &composed, &linker).expect("why not");
+        // let cargocomp = Component::from_file(&engine, "../proxy/target/wasm32-unknown-unknown/release/proxy.wasm").unwrap();
+        // let (example,_) = Example::instantiate(&mut store, &composed, &linker).expect("why not");
+    let (example,_) = Example::instantiate(&mut store, &composed, &linker).expect("why not");
+
     //     let mut host_instance = linker.root();
     //     let fib = Component::from_file(&engine, "../wit-server2/fib.wasm").unwrap();
     //
@@ -85,9 +94,9 @@ async fn reply() -> Result<Box<dyn warp::Reply>, warp::Rejection> {
     //     let host = linker.instantiate(&mut store, &component).expect("pacnhod");
     //
     //     let fib_instance = linker.instantiate(&mut store, &fib).expect("pacnhod");
-        let preinstantiate = linker.instantiate_pre(&cargocomp).expect("TODO: panic message");
-
-        let hello_instance = preinstantiate.instantiate(&mut store).expect("pacnhod");
+    //     let preinstantiate = linker.instantiate_pre(&cargocomp).expect("TODO: panic message");
+    //     let r = example.call_run(&mut store, 2).expect("not hey");
+    //     let hello_instance = preinstantiate.instantiate(&mut store).expect("pacnhod");
         let r = example.interface0.call_run(&mut store, 2).expect("not hey");
         // let exp = hello_instance.exports(&mut store);
     //
@@ -114,6 +123,29 @@ async fn reply() -> Result<Box<dyn warp::Reply>, warp::Rejection> {
 
         Ok(Box::new(format!("sup {}",r)))
 }
+
+async fn reply_c() -> Result<Box<dyn warp::Reply>, warp::Rejection> {
+    let mut config = Config::new();
+    config.wasm_component_model(true);
+
+    let engine = Engine::default();
+
+    let mut store = Store::new(&engine,{});
+
+
+
+    let module = Module::from_file(&engine, "../c-lib/my-core.wasm").unwrap();
+    let instance = Instance::new(&mut store, &module, &[]).expect("not instantiated");
+    let run = instance.get_typed_func::<(u32,),(u32,)>(&mut store, "run").expect("something wrong");
+
+
+    let r = run.call(&mut store, (2,)).expect("not hey");
+
+
+
+    Ok(Box::new(format!("sup {}",r.0)))
+}
+
 #[tokio::main]
 async fn main() {
     // Initialize the default tracing subscriber.

@@ -2,5 +2,9 @@
 <project version="4">
   <component name="VcsDirectoryMappings">
     <mapping directory="" vcs="Git" />
+    <mapping directory="$PROJECT_DIR$/wasi-sdk" vcs="Git" />
+    <mapping directory="$PROJECT_DIR$/wasi-sdk-21.0/wasi-sdk" vcs="Git" />
+    <mapping directory="$PROJECT_DIR$/wasi-sdk/src/config" vcs="Git" />
+    <mapping directory="$PROJECT_DIR$/wasi-sdk/src/llvm-project" vcs="Git" />
   </component>
 </project>
