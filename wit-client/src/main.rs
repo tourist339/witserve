@@ -80,7 +80,7 @@ async fn reply() -> Result<Box<dyn warp::Reply>, warp::Rejection> {
 
         // let cargocomp = Component::from_file(&engine, "../proxy/target/wasm32-unknown-unknown/release/proxy.wasm").unwrap();
         // let (example,_) = Example::instantiate(&mut store, &composed, &linker).expect("why not");
-    let (example,_) = Example::instantiate(&mut store, &composed, &linker).expect("why not");
+    let (example,_) = Example::instantiate(&mut store, &composed, &linker).expect("Failed to instantiate component");
 
     //     let mut host_instance = linker.root();
     //     let fib = Component::from_file(&engine, "../wit-server2/fib.wasm").unwrap();
@@ -91,13 +91,13 @@ async fn reply() -> Result<Box<dyn warp::Reply>, warp::Rejection> {
     //         results[0] = Val::U32(value);
     //         Ok(())
     //     }).expect("TODO: panic message");
-    //     let host = linker.instantiate(&mut store, &component).expect("pacnhod");
+    //     let host = linker.instantiate(&mut store, &component).expect("s");
     //
-    //     let fib_instance = linker.instantiate(&mut store, &fib).expect("pacnhod");
+    //     let fib_instance = linker.instantiate(&mut store, &fib).expect("s");
     //     let preinstantiate = linker.instantiate_pre(&cargocomp).expect("TODO: panic message");
     //     let r = example.call_run(&mut store, 2).expect("not hey");
-    //     let hello_instance = preinstantiate.instantiate(&mut store).expect("pacnhod");
-        let r = example.interface0.call_run(&mut store, 2).expect("not hey");
+    //     let hello_instance = preinstantiate.instantiate(&mut store).expect("s");
+        let r = example.interface0.call_run(&mut store, 2).expect("Failed to call run function");
         // let exp = hello_instance.exports(&mut store);
     //
     //     let run = host.get_typed_func::<(u32,),(u32,)>(&mut store, "execute").expect("wasnt a func");
@@ -113,7 +113,7 @@ async fn reply() -> Result<Box<dyn warp::Reply>, warp::Rejection> {
     // nstantiate(&mut store, &component, &linker).unwrap();
         // let k = host.call_execute(&mut store,1).expect("no shit");
         //
-        // let y =host.bar().call_getheader(&mut store).expect("ohmh");
+        // let y =host.bar().call_getheader(&mut store).expect("xyz");
         // let warp_response = WarpResponse{
         //     ans:k
         // };
@@ -139,7 +139,7 @@ async fn reply_c() -> Result<Box<dyn warp::Reply>, warp::Rejection> {
     let run = instance.get_typed_func::<(u32,),(u32,)>(&mut store, "run").expect("something wrong");
 
 
-    let r = run.call(&mut store, (2,)).expect("not hey");
+    let r = run.call(&mut store, (2,)).expect("not run");
 
 
 
